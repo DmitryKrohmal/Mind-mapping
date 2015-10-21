@@ -6,8 +6,6 @@
     <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="CadetBlue" />
     <SolidColorBrush x:Key="WindowBorderBrush" Color="DimGray" />
     <SolidColorBrush x:Key="WindowBorderBrushInactive" Color="#999999" />
-    <!--<SolidColorBrush x:Key="WindowStatusForeground" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="WindowStatusForegroundInactive" Color="#FFFFFF" />-->
 
     <Style x:Key="WindowStyleTitleBarButton" TargetType="{x:Type Button}">
         <Setter Property="Focusable" Value="false" />
@@ -222,5 +220,19 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    
+    <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Segoe UI Black"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    
+    <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderBrush}"/>
+        <Setter Property="Background" Value="{StaticResource WindowTextAndEffectsBruch}"/>
+        <Setter Property="FontFamily" Value="Segoe UI Black"/>
     </Style>
 </ResourceDictionary>

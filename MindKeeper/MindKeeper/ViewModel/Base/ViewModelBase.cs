@@ -1,7 +1,6 @@
-﻿using System.ComponentModel;
-
-namespace MindKeeper.ViewModel.Base
+﻿namespace MindKeeper.ViewModel.Base
 {
+    using System.ComponentModel;
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

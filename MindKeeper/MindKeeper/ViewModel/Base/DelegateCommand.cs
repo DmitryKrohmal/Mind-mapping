@@ -1,8 +1,7 @@
-﻿using System;
-using System.Windows.Input;
-
-namespace MindKeeper.ViewModel.Base
+﻿namespace MindKeeper.ViewModel.Base
 {
+    using System;
+    using System.Windows.Input;
     public class DelegateCommand : ICommand
     {
         private readonly Action<object> _execute;
@@ -32,6 +31,7 @@ namespace MindKeeper.ViewModel.Base
             {
                 CommandManager.RequerySuggested += value;
             }
+
             remove
             {
                 CommandManager.RequerySuggested -= value;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
@@ -48,6 +49,32 @@ namespace MindKeeperBase.Security
             var str = (string)formatter.Deserialize(stream);
             stream.Close();
             return Unprotect(str);
+        }
+
+        public static byte[] Get8BytesByMD5Hash(string key)
+        {
+            byte[] hash;
+            using (MD5 md5 = MD5.Create())
+                hash = md5.ComputeHash(Encoding.UTF8.GetBytes(key));
+            return hash.Take(8).ToArray();
+        }
+
+        public static byte[] Get16BytesByMD5Hash(string key)
+        {
+            byte[] hash;
+            using (MD5 md5 = MD5.Create())
+                hash = md5.ComputeHash(Encoding.UTF8.GetBytes(key));
+            return hash.Take(16).ToArray();
+        }
+
+        public static byte[] Get32BytesByMD5Hash(string key)
+        {
+            byte[] hash = new byte[32];
+            byte[] hash1;
+            using (MD5 md5 = MD5.Create())
+                hash1 = md5.ComputeHash(Encoding.UTF8.GetBytes(key));
+            hash = hash1.Concat(hash1).ToArray();
+            return hash;
         }
     }
 }

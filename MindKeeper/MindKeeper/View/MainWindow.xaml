@@ -128,7 +128,9 @@
                                 <MenuItem Header="Save to DB"/>
                                 <MenuItem Header="Save local"/>
                                 <MenuItem Header="Delete"/>
-                                <MenuItem Header="Generate file"/>
+                                <MenuItem Header="Generate Map" x:Name="GenerateMapItem" Click="GenerateMapItem_OnClick"/>
+                                <MenuItem Header="Save secure map" x:Name="SaveSecureMapItem" Click="SaveSecureMapItem_OnClick"/>
+                                <MenuItem Header="Open secure map" x:Name="OpenSecureMapItem" Click="OpenSecureMapItem_OnClick"/>
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>

@@ -1,14 +1,14 @@
 ﻿<Application x:Class="MindKeeper.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="View/MainWindow.xaml">
+             Startup="App_OnStartup">
     <Application.Resources>
          <ResourceDictionary>
              <ResourceDictionary.MergedDictionaries>
                  <ResourceDictionary Source="VisualStylesDictionaries/WindowStyles.xaml"/>
                  <ResourceDictionary Source="VisualStylesDictionaries/UpperMenuStyle.xaml"/>
-                 <ResourceDictionary Source="VisualStylesDictionaries/LeftMenuStyle.xaml"/>
-             </ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="VisualStylesDictionaries/LeftMenuStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
          </ResourceDictionary>
     </Application.Resources>
 </Application>
