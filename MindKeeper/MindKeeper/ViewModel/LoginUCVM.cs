@@ -5,11 +5,16 @@
     using System.Linq;
     using System.Windows;
     using System.Windows.Input;
+    using System.Collections;
+    using System.ComponentModel;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using System.Windows.Media;
+    using Base;
     using MindKeeperBase.Model.EFContext;
     using MindKeeperBase.Security;
-    using Base;
-    public class LoginUCVM : ViewModelBase
+
+    public class LoginUCVM : ViewModelBase, INotifyDataErrorInfo
     {
         #region FIELDS
         private GeneralVM _generalVM;
@@ -18,13 +23,6 @@
         private string _userPasswordString;
         private bool _isRememberMe = false;
 
-        private SolidColorBrush _loginBorderBrush;
-        private SolidColorBrush _passwordColorBrush;
-
-        private static readonly SolidColorBrush ErrorBorderBrush = Brushes.OrangeRed;
-        private static readonly SolidColorBrush DefaultBorderBrush = Brushes.DimGray;
-
-        private bool _isLoginError;
         private string _lastUserInfoPath = "LastUserInfo.usr";
         #endregion
 
@@ -40,7 +38,9 @@
 
             set
             {
+                if (_userLoginString == value) return;
                 _userLoginString = value;
+                Validate();
                 OnPropertyChanged("UserLoginString");
             }
         }
@@ -55,7 +55,9 @@
 
             set
             {
+                if (_userPasswordString == value) return;
                 _userPasswordString = value;
+                Validate();
                 OnPropertyChanged("UserPasswordString");
             }
         }
@@ -70,36 +72,6 @@
             }
         }
 
-        public SolidColorBrush LoginBorderBrush
-        {
-            get
-            {
-                if(_loginBorderBrush == null) _loginBorderBrush = DefaultBorderBrush;
-                return _loginBorderBrush;
-            }
-
-            set
-            {
-                _loginBorderBrush = value;
-                OnPropertyChanged("LoginBorderBrush");
-            }
-        }
-
-        public SolidColorBrush PasswordBorderBrush
-        {
-            get
-            {
-                if (_passwordColorBrush == null) _passwordColorBrush = DefaultBorderBrush;
-                return _passwordColorBrush;
-            }
-
-            set
-            {
-                _passwordColorBrush = value;
-                OnPropertyChanged("PasswordBorderBrush");
-            }
-        }
-
         public GeneralVM GeneralVM
         {
             get
@@ -109,24 +81,6 @@
             }
         }
         #endregion
-
-        private bool hasErrors()
-        {
-            return string.IsNullOrEmpty(UserLoginString) || string.IsNullOrEmpty(UserPasswordString);
-        }
-
-        private bool CheckErrors()
-        {
-            _isLoginError = false;
-            if (hasErrors())
-            {
-                _isLoginError = true;
-                LoginBorderBrush = string.IsNullOrEmpty(UserLoginString) ? ErrorBorderBrush : DefaultBorderBrush;
-                PasswordBorderBrush = string.IsNullOrEmpty(UserPasswordString) ? ErrorBorderBrush : DefaultBorderBrush;
-            }
-
-            return hasErrors();
-        }
 
         #region COMMANDS
 
@@ -155,8 +109,8 @@
 
         private void ExecuteLoginCommand(object parameter)
         {
-            CheckErrors();
-            if (!_isLoginError)
+            Validate();
+            if(!string.IsNullOrEmpty(UserLoginString) && !string.IsNullOrEmpty(UserPasswordString))
             {
                 try
                 {
@@ -180,13 +134,12 @@
                 }
                 catch (Exception)
                 {
-                    _isLoginError = true;
                     MessageBox.Show("Login failer. Check data.");
-                    //ErrorLoginTextVisibility = Visibility.Visible;
                 }
             }
 
-            if (!_isLoginError && IsRememberMe)
+            //if (!_isLoginError && IsRememberMe)
+            if (!HasErrors && IsRememberMe)
             {
                 try
                 {
@@ -264,6 +217,80 @@
                 IsRememberMe = false;
             }
         }
+        #endregion
+
+        #region INotifyDataErrorInfo implementation
+
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        public IEnumerable GetErrors(string propertyName)
+        {
+            List<string> errors = new List<string>();
+            if (propertyName != null)
+            {
+                propErrors.TryGetValue(propertyName, out errors);
+                return errors;
+            }
+            else
+                return null;
+        }
+
+        public bool HasErrors
+        {
+            get { return propErrors.Values.Any(l => l.Count > 0); }
+        }
+
+
+        Dictionary<string, List<string>> propErrors = new Dictionary<string, List<string>>();
+
+        private void Validate()
+        {
+            Task.Run(() => DataValidation());
+        }
+
+        private void DataValidation()
+        {
+            //Validate Name property
+            List<string> listLoginErrors;
+            if (propErrors.TryGetValue(UserLoginString, out listLoginErrors) == false)
+                listLoginErrors = new List<string>();
+            else
+                listLoginErrors.Clear();
+
+            if (string.IsNullOrEmpty(UserLoginString))
+                listLoginErrors.Add("User login should not be empty.");
+
+            propErrors["UserLoginString"] = listLoginErrors;
+
+            if (listLoginErrors.Count > 0)
+            {
+                OnPropertyErrorsChanged("UserLoginString");
+            }
+
+            //Validate Password property
+            List<string> listPasswordErrors;
+            if (propErrors.TryGetValue(UserLoginString, out listPasswordErrors) == false)
+                listPasswordErrors = new List<string>();
+            else
+                listPasswordErrors.Clear();
+
+            if (string.IsNullOrEmpty(UserPasswordString))
+                listPasswordErrors.Add("User password should not be empty.");
+
+            propErrors["UserPasswordString"] = listPasswordErrors;
+
+            if (listPasswordErrors.Count > 0)
+            {
+                OnPropertyErrorsChanged("UserPasswordString");
+            }
+        }
+
+        private void OnPropertyErrorsChanged(string p)
+        {
+            if (ErrorsChanged != null)
+                ErrorsChanged.Invoke(this, new DataErrorsChangedEventArgs(p));
+        }
+
         #endregion
     }
 }

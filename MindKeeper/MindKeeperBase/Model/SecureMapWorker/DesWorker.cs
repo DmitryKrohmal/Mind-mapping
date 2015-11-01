@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
-using System.Text;
 using MindKeeperBase.Interfaces;
 
 namespace MindKeeperBase.Model.SecureMapWorker

@@ -9,7 +9,8 @@
         Style="{StaticResource WindowStyle}"
         MinHeight="350"
         MinWidth="500"
-        Icon="../Assets/Images/MKIco.ico">
+        Icon="../Assets/Images/MKIco.ico"
+        WindowStartupLocation="CenterScreen">
     <!--<DockPanel>
         <StatusBar
             DockPanel.Dock="Bottom"

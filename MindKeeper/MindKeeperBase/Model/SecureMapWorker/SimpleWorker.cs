@@ -1,7 +1,5 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Forms;
-using System.Xml.Serialization;
 using MindKeeperBase.Interfaces;
 
 namespace MindKeeperBase.Model.SecureMapWorker

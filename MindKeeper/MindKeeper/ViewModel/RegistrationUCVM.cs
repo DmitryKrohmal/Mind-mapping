@@ -5,11 +5,15 @@
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Media;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Threading.Tasks;
     using MindKeeperBase.Model;
     using MindKeeperBase.Model.EFContext;
     using MindKeeperBase.Security;
     using Base;
-    public class RegistrationUCVM : ViewModelBase
+    public class RegistrationUCVM : ViewModelBase, INotifyDataErrorInfo
     {
         #region
 
@@ -17,14 +21,6 @@
         private string _userPasswordString;
         private string _userConfirmPasswordString;
 
-        private SolidColorBrush _loginBorderBrush;
-        private SolidColorBrush _passwordBorderBrush;
-        private SolidColorBrush _confirmPasswordBorderBrush;
-
-        private static readonly SolidColorBrush ErrorBorderBrush = Brushes.OrangeRed;
-        private static readonly SolidColorBrush DefaultBorderBrush = Brushes.DimGray;
-
-        private bool _isRegistrationFailed;
         private GeneralVM _generalVm;
 
         #endregion
@@ -51,6 +47,7 @@
             set
             {
                 _userLoginString = value;
+                Validate();
                 OnPropertyChanged("UserLoginString");
             }
         }
@@ -66,6 +63,7 @@
             set
             {
                 _userPasswordString = value;
+                Validate();
                 OnPropertyChanged("UserPasswordString");
             }
         }
@@ -81,79 +79,11 @@
             set
             {
                 _userConfirmPasswordString = value;
+                Validate();
                 OnPropertyChanged("UserConfirmPasswordString");
             }
         }
-
-        public SolidColorBrush LoginBorderBrush
-        {
-            get
-            {
-                if (_loginBorderBrush == null) _loginBorderBrush = DefaultBorderBrush;
-                return _loginBorderBrush;
-            }
-
-            set
-            {
-                _loginBorderBrush = value;
-                OnPropertyChanged("LoginBorderBrush");
-            }
-        }
-
-        public SolidColorBrush PasswordBorderBrush
-        {
-            get
-            {
-                if (_passwordBorderBrush == null) _passwordBorderBrush = DefaultBorderBrush;
-                return _passwordBorderBrush;
-            }
-
-            set
-            {
-                _passwordBorderBrush = value;
-                OnPropertyChanged("PasswordBorderBrush");
-            }
-        }
-
-        public SolidColorBrush ConfirmPasswordBorderBrush
-        {
-            get
-            {
-                if (_confirmPasswordBorderBrush == null) _confirmPasswordBorderBrush = DefaultBorderBrush;
-                return _confirmPasswordBorderBrush;
-            }
-
-            set
-            {
-                _confirmPasswordBorderBrush = value;
-                OnPropertyChanged("ConfirmPasswordBorderBrush");
-            }
-        }
-
         #endregion
-
-        private bool hasErrors()
-        {
-            return string.IsNullOrEmpty(UserLoginString) || string.IsNullOrEmpty(UserPasswordString)
-                   || string.IsNullOrEmpty(UserConfirmPasswordString) || UserPasswordString != UserConfirmPasswordString;
-        }
-
-        private bool CheckErrors()
-        {
-            _isRegistrationFailed = false;
-            if (hasErrors())
-            {
-                _isRegistrationFailed = true;
-                LoginBorderBrush = string.IsNullOrEmpty(UserLoginString) ? ErrorBorderBrush : DefaultBorderBrush;
-                PasswordBorderBrush = string.IsNullOrEmpty(UserPasswordString) ? ErrorBorderBrush : DefaultBorderBrush;
-                ConfirmPasswordBorderBrush = string.IsNullOrEmpty(UserConfirmPasswordString) ||
-                                             UserConfirmPasswordString != UserPasswordString
-                    ? ErrorBorderBrush
-                    : DefaultBorderBrush;
-            }
-
-            return hasErrors();
-        }
 
         private void CloseWindow()
         {
@@ -176,8 +106,9 @@
 
         private void ExecuteRegisterCommand(object parameter)
         {
-            CheckErrors();
-            if (!_isRegistrationFailed)
+            Validate();
+            if (!string.IsNullOrEmpty(UserLoginString) && !string.IsNullOrEmpty(UserPasswordString) 
+                && !string.IsNullOrEmpty(UserConfirmPasswordString) && UserConfirmPasswordString == UserPasswordString)
             {
                 try
                 {
@@ -203,11 +134,104 @@
                 }
                 catch (Exception)
                 {
-                    _isRegistrationFailed = true;
                     MessageBox.Show("Registration failer :(");
-                    //ErrorLoginTextVisibility = Visibility.Visible;
                 }
             }
+        }
+
+        #endregion
+
+
+        #region INotifyDataErrorInfo implementation
+
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        public IEnumerable GetErrors(string propertyName)
+        {
+            List<string> errors = new List<string>();
+            if (propertyName != null)
+            {
+                propErrors.TryGetValue(propertyName, out errors);
+                return errors;
+            }
+            else
+                return null;
+        }
+
+        public bool HasErrors
+        {
+            get { return propErrors.Values.Any(l => l.Count > 0); }
+        }
+
+
+        Dictionary<string, List<string>> propErrors = new Dictionary<string, List<string>>();
+
+        private void Validate()
+        {
+            Task.Run(() => DataValidation());
+        }
+
+        private void DataValidation()
+        {
+            //Validate Name property
+            List<string> listLoginErrors;
+            if (propErrors.TryGetValue(UserLoginString, out listLoginErrors) == false)
+                listLoginErrors = new List<string>();
+            else
+                listLoginErrors.Clear();
+
+            if (string.IsNullOrEmpty(UserLoginString))
+                listLoginErrors.Add("User login should not be empty.");
+
+            propErrors["UserLoginString"] = listLoginErrors;
+
+            if (listLoginErrors.Count > 0)
+            {
+                OnPropertyErrorsChanged("UserLoginString");
+            }
+
+            //Validate Password property
+            List<string> listPasswordErrors;
+            if (propErrors.TryGetValue(UserLoginString, out listPasswordErrors) == false)
+                listPasswordErrors = new List<string>();
+            else
+                listPasswordErrors.Clear();
+
+            if (string.IsNullOrEmpty(UserPasswordString))
+                listPasswordErrors.Add("User password should not be empty.");
+
+            propErrors["UserPasswordString"] = listPasswordErrors;
+
+            if (listPasswordErrors.Count > 0)
+            {
+                OnPropertyErrorsChanged("UserPasswordString");
+            }
+
+            //validate confirm password string
+            List<string> listConfirmPasswordErrors;
+            if (propErrors.TryGetValue(UserLoginString, out listConfirmPasswordErrors) == false)
+                listConfirmPasswordErrors = new List<string>();
+            else
+                listConfirmPasswordErrors.Clear();
+
+            if (string.IsNullOrEmpty(UserConfirmPasswordString))
+                listConfirmPasswordErrors.Add("User confirm password should not be empty.");
+
+            if (UserConfirmPasswordString != UserPasswordString)
+                listConfirmPasswordErrors.Add("Password is not equals confirm password.");
+
+            propErrors["UserConfirmPasswordString"] = listConfirmPasswordErrors;
+
+            if (listConfirmPasswordErrors.Count > 0)
+            {
+                OnPropertyErrorsChanged("UserConfirmPasswordString");
+            }
+        }
+
+        private void OnPropertyErrorsChanged(string p)
+        {
+            if (ErrorsChanged != null)
+                ErrorsChanged.Invoke(this, new DataErrorsChangedEventArgs(p));
         }
 
         #endregion
