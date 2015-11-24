@@ -8,7 +8,7 @@ using MindKeeperBase.Interfaces;
 namespace MindKeeperBase.Model
 {
     [Serializable]
-    public class FileAttachment : IAttachment
+    public class FileAttachment : ICloneable
     {
         [Key]
         public Guid AttachmentId { get; set; }
@@ -31,5 +31,13 @@ namespace MindKeeperBase.Model
         [XmlIgnore]
         [NotMapped]
         public string PathToFile { get; set; }
+
+        public object Clone()
+        {
+            FileAttachment fileAttachmentClone = new FileAttachment();
+            fileAttachmentClone.FileName = string.Copy(FileName);
+            Array.Copy(FileData, fileAttachmentClone.FileData, FileData.Length);
+            return fileAttachmentClone;
+        }
     }
 }

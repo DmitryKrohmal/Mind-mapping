@@ -235,4 +235,13 @@
         <Setter Property="Background" Value="{StaticResource WindowTextAndEffectsBruch}"/>
         <Setter Property="FontFamily" Value="Segoe UI Black"/>
     </Style>
+
+
+    <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+        <Style.Setters>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="FontFamily" Value="Segoe UI Black"/>
+            <Setter Property="Foreground" Value="{StaticResource WindowTextAndEffectsBruch}"/>
+        </Style.Setters>
+    </Style>
 </ResourceDictionary>

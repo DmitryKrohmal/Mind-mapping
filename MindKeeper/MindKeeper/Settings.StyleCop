@@ -343,8 +343,10 @@
       </Rules>
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
+          <Value>_m</Value>
           <Value>h</Value>
           <Value>l</Value>
+          <Value>mk</Value>
           <Value>w</Value>
         </CollectionProperty>
       </AnalyzerSettings>

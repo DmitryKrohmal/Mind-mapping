@@ -7,7 +7,8 @@
              <ResourceDictionary.MergedDictionaries>
                  <ResourceDictionary Source="VisualStylesDictionaries/WindowStyles.xaml"/>
                  <ResourceDictionary Source="VisualStylesDictionaries/UpperMenuStyle.xaml"/>
-                <ResourceDictionary Source="VisualStylesDictionaries/LeftMenuStyle.xaml"/>
+                 <ResourceDictionary Source="VisualStylesDictionaries/LeftMenuStyle.xaml"/>
+                 <ResourceDictionary Source="VisualStylesDictionaries/TopicUCStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
          </ResourceDictionary>
     </Application.Resources>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Serialization;
 
 namespace MindKeeperBase.Model
@@ -18,16 +17,19 @@ namespace MindKeeperBase.Model
         public string Name { get; set; }
         public string FilePath { get; set; }
         public DateTime CreationDateTime { get; set; }
+        public int Height { get; set; }
+        public int Width { get; set; }
 
-        [NotMapped]
-        public bool IsSecure { get; set; }
+
+        public virtual Topic MainTopic { get; set; }
+        public Guid MainTopicId { get; set; }
 
         public Guid UserId { get; set; }
 
         [XmlIgnore]
         public virtual User User { get; set; }
         [XmlIgnore]
-        public virtual ICollection<Topic> Topics { get; set; }
+        public virtual List<Topic> Topics { get; set; }
 
 
         #region GetHashCode, Equals, ToString override

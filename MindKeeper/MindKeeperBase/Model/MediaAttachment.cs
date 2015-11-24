@@ -8,7 +8,7 @@ using MindKeeperBase.Interfaces;
 namespace MindKeeperBase.Model
 {
     [Serializable]
-    public class MediaAttachment : IAttachment
+    public class MediaAttachment : ICloneable
     {
         [Key]
         public Guid AttachmentId { get; set; }
@@ -36,5 +36,13 @@ namespace MindKeeperBase.Model
         public Guid TopicId { get; set; }
         [XmlIgnore]
         public virtual Topic Topic { get; set; }
+
+        public object Clone()
+        {
+            ImageAttachment fileAttachmentClone = new ImageAttachment();
+            fileAttachmentClone.FileName = string.Copy(FileName);
+            Array.Copy(FileData, fileAttachmentClone.FileData, FileData.Length);
+            return fileAttachmentClone;
+        }
     }
 }

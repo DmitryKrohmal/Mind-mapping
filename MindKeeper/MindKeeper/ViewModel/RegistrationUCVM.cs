@@ -171,11 +171,16 @@
             Task.Run(() => DataValidation());
         }
 
+
+        List<string> listLoginErrors;
+        List<string> listPasswordErrors;
+        List<string> listConfirmPasswordErrors;
+
         private void DataValidation()
         {
             //Validate Name property
-            List<string> listLoginErrors;
-            if (propErrors.TryGetValue(UserLoginString, out listLoginErrors) == false)
+            
+            if (propErrors.TryGetValue("UserLoginString", out listLoginErrors) == false)
                 listLoginErrors = new List<string>();
             else
                 listLoginErrors.Clear();
@@ -185,14 +190,14 @@
 
             propErrors["UserLoginString"] = listLoginErrors;
 
-            if (listLoginErrors.Count > 0)
+            //if (listLoginErrors.Count > 0)
             {
                 OnPropertyErrorsChanged("UserLoginString");
             }
 
             //Validate Password property
-            List<string> listPasswordErrors;
-            if (propErrors.TryGetValue(UserLoginString, out listPasswordErrors) == false)
+            
+            if (propErrors.TryGetValue("UserPasswordString", out listPasswordErrors) == false)
                 listPasswordErrors = new List<string>();
             else
                 listPasswordErrors.Clear();
@@ -202,14 +207,14 @@
 
             propErrors["UserPasswordString"] = listPasswordErrors;
 
-            if (listPasswordErrors.Count > 0)
+            //if (listPasswordErrors.Count > 0)
             {
                 OnPropertyErrorsChanged("UserPasswordString");
             }
 
             //validate confirm password string
-            List<string> listConfirmPasswordErrors;
-            if (propErrors.TryGetValue(UserLoginString, out listConfirmPasswordErrors) == false)
+            
+            if (propErrors.TryGetValue("UserConfirmPasswordString", out listConfirmPasswordErrors) == false)
                 listConfirmPasswordErrors = new List<string>();
             else
                 listConfirmPasswordErrors.Clear();
@@ -222,7 +227,7 @@
 
             propErrors["UserConfirmPasswordString"] = listConfirmPasswordErrors;
 
-            if (listConfirmPasswordErrors.Count > 0)
+            //if (listConfirmPasswordErrors.Count > 0)
             {
                 OnPropertyErrorsChanged("UserConfirmPasswordString");
             }

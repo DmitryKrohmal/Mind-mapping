@@ -1,7 +1,7 @@
 ﻿<Window x:Class="MindKeeper.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" 
+        Title="MindKeeper" 
         Height="700" 
         Width="1000"
         AllowsTransparency="True"
@@ -10,7 +10,20 @@
         MinHeight="350"
         MinWidth="500"
         Icon="../Assets/Images/MKIco.ico"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:Vm="clr-namespace:MindKeeper.ViewModel">
+
+    <intr:Interaction.Triggers>
+        <intr:EventTrigger EventName="Activated">
+            <intr:InvokeCommandAction Command="{Binding WindowGotFocusCommand}"/>
+        </intr:EventTrigger>
+    </intr:Interaction.Triggers>
+    
+    <Window.DataContext>
+        <Vm:MainWindowVM></Vm:MainWindowVM>
+    </Window.DataContext>
+
     <!--<DockPanel>
         <StatusBar
             DockPanel.Dock="Bottom"
@@ -32,6 +45,12 @@
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             />
     </DockPanel>-->
+    
+    <!--<Window.DataContext>
+        <Vm:MainWindowVM></Vm:MainWindowVM>
+    </Window.DataContext>-->
+    
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150"/>
@@ -43,7 +62,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="150"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
@@ -57,11 +76,11 @@
                                 BorderBrush="LightGray"
                                 Grid.RowSpan="2"/>
                         <TextBlock Grid.Row="0"
-                                   Text="Username"
+                                   Text="{Binding GeneralVm.ActiveUser.Login}"
                                    Style="{StaticResource BigTextBlockStyle}"/>
                         <TextBlock Grid.Row="1"
                                    Style="{StaticResource SmallTextBlockStyle}" 
-                                   Text="Maps count"/>
+                                   Text="{Binding ActiveUserMapsCountString}"/>
                     </Grid>
                     
                     <Grid Grid.Row="1" Margin="10">
@@ -72,20 +91,28 @@
                         <Border BorderThickness="0,2,0,2" 
                                 BorderBrush="LightGray"
                                 Grid.RowSpan="2"/>
-                        <TextBlock Grid.Row="0" Text="Name of active project"
+                        <TextBlock Grid.Row="0"
+                                   Text="{Binding SelectedMapName}"
                                    Style="{StaticResource BigTextBlockStyle}"/>
                         <StackPanel Grid.Row="1" >
-                            <TextBlock Text="File description"
-                                       Style="{StaticResource SmallTextBlockStyle}"/>
-                            <TextBlock Text="Date of creation"
+                            <TextBlock Text="Selected map"
+                                       HorizontalAlignment="Center"
+                                       Style="{StaticResource SmallTextBlockStyle}"
+                                       Foreground="Gray"/>
+                            <TextBlock Text="Creation date: "
+                                       Style="{StaticResource SmallTextBlockStyle}"
+                                       Margin="0,10,0,0"/>
+                            <TextBlock Text="{Binding CreationDateTimeString}"
                                        Style="{StaticResource SmallTextBlockStyle}"/>
                         </StackPanel>
                     </Grid>
                     
                     <StackPanel Grid.Row="2" Margin="10">
-                        <TextBlock Text="Path to folder"
+                        <TextBlock Text="Available maps: "
                                    Style="{StaticResource SmallTextBlockStyle}"/>
-                        <ListBox MinHeight="200"></ListBox>
+                        <ListBox MinHeight="200"
+                                 ItemsSource="{Binding GeneralVm.ActiveMaps}"
+                                 SelectedItem="{Binding SelectedMap, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></ListBox>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -124,18 +151,18 @@
                         
                         <Button.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="New"/>
+                                <MenuItem Header="New mindmap"
+                                          Command="{Binding NewMapCommand}"/>
                                 <MenuItem Header="Open"/>
                                 <MenuItem Header="Save to DB"/>
                                 <MenuItem Header="Save local"/>
                                 <MenuItem Header="Delete"/>
-                                <MenuItem Header="Generate Map" x:Name="GenerateMapItem" Click="GenerateMapItem_OnClick"/>
-                                <MenuItem Header="Save secure map" x:Name="SaveSecureMapItem" Click="SaveSecureMapItem_OnClick"/>
-                                <MenuItem Header="Open secure map" x:Name="OpenSecureMapItem" Click="OpenSecureMapItem_OnClick"/>
+                                <MenuItem Header="Save secure map" x:Name="SaveSecureMapItem"/>
+                                <MenuItem Header="Open secure map" x:Name="OpenSecureMapItem"/>
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
-                    <Button Width="60">
+                    <Button Width="60" Command="{Binding NewTopicCommand}">
                         <TextBlock Text="New topic"
                                    Style="{StaticResource UpperMenuTextBlockStyle}"/>
                     </Button>
@@ -200,10 +227,9 @@
 
             <Border BorderThickness="1" BorderBrush="{StaticResource WindowBorderBrush}" Grid.Row="1">
                 <TabControl>
-                    <TabItem Header="new tab item"></TabItem>
-                    <TabItem Header="new tab item1">new tab item1</TabItem>
-                    <TabItem Header="new tab item2">new tab item2</TabItem>
-                    <TabItem Header="new tab item3">new tab item3</TabItem>
+                    <TabItem Header="Map">
+                        <Canvas x:Name="MapCanvas"></Canvas>
+                    </TabItem>
                 </TabControl>
             </Border>
 

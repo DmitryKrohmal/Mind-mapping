@@ -10,10 +10,6 @@
         ResizeMode="NoResize"
         xmlns:Vm="clr-namespace:MindKeeper.ViewModel">
     
-    <Window.DataContext>
-        <Vm:SaveSecureMapVM></Vm:SaveSecureMapVM>
-    </Window.DataContext>
-    
     <StackPanel Margin="30,10">
         <TextBlock Text="MAP NAME"
                    HorizontalAlignment="Center"

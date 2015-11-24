@@ -1,4 +1,6 @@
-﻿namespace MindKeeper.ViewModel
+﻿using System.Data.Entity;
+
+namespace MindKeeper.ViewModel
 {
     using System;
     using System.IO;
@@ -114,20 +116,15 @@
             {
                 try
                 {
-                    using (MKDbContext db = new MKDbContext())
-                    {
                         var encryptedPass = Security.EncryptPassword(UserLoginString, UserPasswordString);
-                        GeneralVM.ActiveUser = db.Users.FirstOrDefault(u => u.Login == UserLoginString &&
+                        GeneralVM.ActiveUser = GeneralVM.MKDbContext.Users.FirstOrDefault(u => u.Login == UserLoginString &&
                                                                                   u.Password == encryptedPass);
                         if (GeneralVM.ActiveUser == null)
                         {
                             MessageBox.Show("Login failed. User data is wrong or user is not exist.");
                             return;
                         }
-                    }
                     
-                    //GeneralVM.ActiveUser = User.Find(UserLoginString, UserPasswordString);
-                    //User.Users.Remove(User.Users.Values.ToList()[0].UserId);
                     MainWindow mainWindow = new MainWindow();
                     CloseWindow();
                     mainWindow.Show();
@@ -138,7 +135,6 @@
                 }
             }
 
-            //if (!_isLoginError && IsRememberMe)
             if (!HasErrors && IsRememberMe)
             {
                 try
@@ -262,7 +258,7 @@
 
             propErrors["UserLoginString"] = listLoginErrors;
 
-            if (listLoginErrors.Count > 0)
+            //if (listLoginErrors.Count > 0)
             {
                 OnPropertyErrorsChanged("UserLoginString");
             }
@@ -279,7 +275,7 @@
 
             propErrors["UserPasswordString"] = listPasswordErrors;
 
-            if (listPasswordErrors.Count > 0)
+            //if (listPasswordErrors.Count > 0)
             {
                 OnPropertyErrorsChanged("UserPasswordString");
             }

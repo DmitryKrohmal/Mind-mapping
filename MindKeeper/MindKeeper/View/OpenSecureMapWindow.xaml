@@ -11,9 +11,6 @@
         ResizeMode="NoResize"
         xmlns:Vm="clr-namespace:MindKeeper.ViewModel">
     
-    <Window.DataContext>
-        <Vm:OpenSecureMapVM></Vm:OpenSecureMapVM>
-    </Window.DataContext>
     
     
     <StackPanel Margin="30,10">

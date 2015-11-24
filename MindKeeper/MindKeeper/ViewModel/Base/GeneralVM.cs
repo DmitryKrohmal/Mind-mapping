@@ -1,4 +1,10 @@
-﻿namespace MindKeeper.ViewModel.Base
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.Entity;
+using System.Linq;
+using MindKeeperBase.Model.EFContext;
+
+namespace MindKeeper.ViewModel.Base
 {
     using MindKeeperBase.Model;
     public class GeneralVM : ViewModelBase
@@ -29,14 +35,39 @@
         }
 
 
-        private Map _activeMap;
-        public Map ActiveMap
+        private ObservableCollection<Map> _activeMaps;
+        public ObservableCollection<Map> ActiveMaps
         {
-            get { return _activeMap; }
+            get
+            {
+                if (_activeMaps == null)
+                {
+                    _activeMaps = new ObservableCollection<Map>();
+                    foreach (var m in ActiveUser.Maps)
+                    {
+                        _activeMaps.Add(m);
+                    }
+                }
+
+                return _activeMaps;
+            }
             set
             {
-                _activeMap = value;
-                OnPropertyChanged("ActiveMap");
+                _activeMaps = value;
+                OnPropertyChanged("ActiveMaps");
+            }
+        }
+
+
+
+        private MKDbContext _mkDbContext;
+        public MKDbContext MKDbContext
+        {
+            get
+            {
+                if(_mkDbContext == null)
+                    _mkDbContext = new MKDbContext();
+                return _mkDbContext;
             }
         }
     }

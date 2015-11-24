@@ -1,5 +1,9 @@
-﻿using MindKeeper.View;
-using MindKeeper.ViewModel.Base;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using MindKeeper.TopicDisplayFactory;
+using MindKeeper.TopicDisplayFactory.Factories;
+using MindKeeper.ViewModel;
+using MindKeeperBase.Model.TopicConnection;
 
 namespace MindKeeper
 {
@@ -12,9 +16,51 @@ namespace MindKeeper
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainWindowVM vm;
         public MainWindow()
         {
             InitializeComponent();
+            vm = (MainWindowVM) DataContext;
+            vm.ActiveMapTopics.CollectionChanged += ActiveMapTopics_CollectionChanged;
+            newTopics = new List<Topic>();
+        }
+
+        private List<Topic> newTopics;
+        void ActiveMapTopics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyCollectionChangedAction action = e.Action;
+            if (action == NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null)
+                    {
+                        foreach(Topic newItem in e.NewItems)
+                        {
+                            newTopics.Add(newItem);
+                            
+                            DisplayTopic(newItem);
+                        }
+                    }
+            }
+            if (action == NotifyCollectionChangedAction.Reset)
+            {
+                RefreshCanvas();
+            }
+        }
+
+        private void RefreshCanvas()
+        {
+            MapCanvas.Children.Clear();
+            foreach (var i in vm.ActiveMapTopics)
+            {
+                i.InitializeTopic();
+                DisplayTopic(i);
+            }
+        }
+
+        private void DisplayTopic(Topic t)
+        {
+            TopicDisplayWorker worker = new TopicDisplayWorker(new NormalStyleTopicFactory(), t, new LineConnection(), MapCanvas);
+            worker.DisplayTopic();
         }
 
         private void FileMenuBtn_OnClick(object sender, RoutedEventArgs e)
@@ -23,32 +69,6 @@ namespace MindKeeper
             (sender as Button).ContextMenu.PlacementTarget = sender as Button;
             (sender as Button).ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
             (sender as Button).ContextMenu.IsOpen = true;
-        }
-
-        private void GenerateMapItem_OnClick(object sender, RoutedEventArgs e)
-        {
-            var m = new Map();
-            m.Name = "NewTestMap";
-            m.FilePath = @".\" + GeneralVM.Instance().ActiveUser.Login + @"\" + m.Name + @".mmp";
-            m.UserId = GeneralVM.Instance().ActiveUser.UserId;
-            Topic t = new Topic();
-            t.Name = "NEW TOPIC!!!";
-            m.Topics.Add(t);
-            GeneralVM.Instance().ActiveMap = m;
-        }
-
-        private void SaveSecureMapItem_OnClick(object sender, RoutedEventArgs e)
-        {
-            SaveSecureMapWindow ss = new SaveSecureMapWindow();
-            ss.Owner = this;
-            ss.ShowDialog();
-        }
-
-        private void OpenSecureMapItem_OnClick(object sender, RoutedEventArgs e)
-        {
-            OpenSecureMapWindow os = new OpenSecureMapWindow();
-            os.Owner = this;
-            os.ShowDialog();
         }
     }
 }

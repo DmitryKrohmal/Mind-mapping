@@ -10,14 +10,11 @@ using MindKeeperBase.Interfaces;
 namespace MindKeeperBase.Model
 {
     [Serializable]
-    public class ImageAttachment : IAttachment
+    public class ImageAttachment : ICloneable
     {
         [Key]
         public Guid AttachmentId { get; set; }
-        public string FileName
-        {
-            get { return PathToFile.Substring(PathToFile.LastIndexOf('\\'), PathToFile.Length); }
-        }
+        public string FileName { get; set; }
         
         [XmlIgnore]
         [NotMapped]
@@ -63,5 +60,13 @@ namespace MindKeeperBase.Model
         public Guid TopicId { get; set; }
         [XmlIgnore]
         public virtual Topic Topic { get; set; }
+
+        public object Clone()
+        {
+            ImageAttachment fileAttachmentClone = new ImageAttachment();
+            fileAttachmentClone.FileName = string.Copy(FileName);
+            Array.Copy(FileData, fileAttachmentClone.FileData, FileData.Length);
+            return fileAttachmentClone;
+        }
     }
 }
